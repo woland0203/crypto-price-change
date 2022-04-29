@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\PriceChangeModel;
 use App\Repositories\PriceChangeApiRepository;
+use App\Services\Validator\Rules\GreaterThan;
+use App\Services\Validator\ValidatorService;
+use App\Services\ValidatorAssets\CryptoDataRulesAsset;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -11,17 +14,21 @@ use Illuminate\Support\Facades\Log;
 class CryptoPriceChangeController extends Controller
 {
     private PriceChangeApiRepository $repository;
-
-    public function __construct(PriceChangeApiRepository $repository)
+    private ValidatorService $validatorService;
+    
+    public function __construct(PriceChangeApiRepository $repository, ValidatorService $validatorService)
     {
         $this->repository = $repository;
+        $this->validatorService = $validatorService;
     }
 
     public function index(Request $request): JsonResponse
     {
         try {
             $limit = $request->query('limit');
+            $limit = (new GreaterThan(0))->validate($limit) ? $limit : null;
             $offset = $request->query('offset');
+            $offset = (new GreaterThan(0))->validate($offset) ? $offset : 0;
 
             $result = array_map(
                 function (PriceChangeModel $model) { return$model->toArray(); },
@@ -56,6 +63,10 @@ class CryptoPriceChangeController extends Controller
     {
         try {
             $data = $request->post();
+            $errors = $this->validatorService->validate((new CryptoDataRulesAsset())->getRules(), $data);
+            if ($errors) {
+                return response()->json($errors, 400);
+            }
             $result = $this->repository->create($data);
 
             return response()->json($result->toArray());
@@ -70,6 +81,10 @@ class CryptoPriceChangeController extends Controller
     {
         try {
             $data = $request->post();
+            $errors = $this->validatorService->validate((new CryptoDataRulesAsset())->getRules(), $data);
+            if ($errors) {
+                return response()->json($errors, 400);
+            }
 
             $result = $this->repository->updateByName($name, $data);
             if (!$result) {
