@@ -6,7 +6,8 @@ use App\Models\PriceChangeModel;
 use App\Repositories\PriceChangeApiRepository;
 use App\Services\Validator\Rules\GreaterThan;
 use App\Services\Validator\ValidatorService;
-use App\Services\ValidatorAssets\CryptoDataRulesAsset;
+use App\Services\ValidatorAssets\CryptoDataCreateRulesAsset;
+use App\Services\ValidatorAssets\CryptoDataUpdateRulesAsset;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -15,7 +16,7 @@ class CryptoPriceChangeController extends Controller
 {
     private PriceChangeApiRepository $repository;
     private ValidatorService $validatorService;
-    
+
     public function __construct(PriceChangeApiRepository $repository, ValidatorService $validatorService)
     {
         $this->repository = $repository;
@@ -63,7 +64,7 @@ class CryptoPriceChangeController extends Controller
     {
         try {
             $data = $request->post();
-            $errors = $this->validatorService->validate((new CryptoDataRulesAsset())->getRules(), $data);
+            $errors = $this->validatorService->validate((new CryptoDataCreateRulesAsset())->getRules(), $data);
             if ($errors) {
                 return response()->json($errors, 400);
             }
@@ -81,7 +82,7 @@ class CryptoPriceChangeController extends Controller
     {
         try {
             $data = $request->post();
-            $errors = $this->validatorService->validate((new CryptoDataRulesAsset())->getRules(), $data);
+            $errors = $this->validatorService->validate((new CryptoDataUpdateRulesAsset())->getRules(), $data);
             if ($errors) {
                 return response()->json($errors, 400);
             }

@@ -11,6 +11,6 @@ class RequiredRule implements Rule
 
     public function message($attributeValue = null, string $attributeName = ''): string
     {
-        return sprintf('Attribute "%s" property', $attributeName);
+        return sprintf('Attribute "%s" property required', $attributeName);
     }
 }

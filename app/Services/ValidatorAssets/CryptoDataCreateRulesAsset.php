@@ -7,7 +7,7 @@ use App\Services\Validator\Rules\RequiredRule;
 use App\Services\Validator\Rules\StringRule;
 use App\Services\Validator\RulesAsset;
 
-class CryptoDataRulesAsset implements RulesAsset
+class CryptoDataCreateRulesAsset implements RulesAsset
 {
     public function getRules(): array
     {

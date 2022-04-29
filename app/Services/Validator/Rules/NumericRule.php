@@ -6,6 +6,10 @@ class NumericRule implements Rule
 {
     public function validate($attributeValue = null, string $attributeName = ''): bool
     {
+        if ($attributeValue === null) {
+            return true;
+        }
+
         return is_numeric($attributeValue);
     }
 
